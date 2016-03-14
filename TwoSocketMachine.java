@@ -73,14 +73,14 @@ public class TwoSocketMachine {
       // Machine loop
       // ------------
 
-      int logicalClock = 0;
+      int logicalTime = 0;
       while (true) {
         // handle a message if one exists
         if (!messages.isEmpty()) {
           int receivedTime = messages.poll();
-          System.out.println("" + logicalClock + ": received " + receivedTime);
-          if (receivedTime > logicalClock) {
-            logicalClock = receivedTime;
+          System.out.println("" + logicalTime + ": received " + receivedTime);
+          if (receivedTime > logicalTime) {
+            logicalTime = receivedTime;
           }
 
         // else execute a task
@@ -90,23 +90,23 @@ public class TwoSocketMachine {
 
           // message send for 1-3
           if (rand == 1) {
-            out0.println(logicalClock);
-            System.out.println("" + logicalClock + ": sent message to " + id0);
+            out0.println(logicalTime);
+            System.out.println("" + logicalTime + ": sent message to " + id0);
           } else if (rand == 2) {
-            out1.println(logicalClock);
-            System.out.println("" + logicalClock + ": sent message to " + id1);
+            out1.println(logicalTime);
+            System.out.println("" + logicalTime + ": sent message to " + id1);
           } else if (rand == 3) {
-            out1.println(logicalClock);
-            System.out.println("" + logicalClock + ": sent message to both");
+            out1.println(logicalTime);
+            System.out.println("" + logicalTime + ": sent message to both");
 
           // anonymous event for 4+
           } else {
-            System.out.println("" + logicalClock + ": ticked");
+            System.out.println("" + logicalTime + ": ticked");
           }
         }
 
         // increment logical clock, tick physical clock
-        logicalClock++;
+        logicalTime++;
         Thread.sleep(tickDelay);
       }
 
