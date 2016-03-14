@@ -69,8 +69,9 @@ public class TwoSocketMachine {
     BlockingQueue<Integer> messages = new LinkedBlockingQueue<Integer>();
 
     // determine clock speed
-    int ticksPerSecond = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-    int tickDelay = 1000 / ticksPerSecond;
+    float ticksPerSecond = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+    ticksPerSecond = (float) (5.0 + (0.1 * ticksPerSecond));
+    int tickDelay = (int) (1000.0 / ticksPerSecond);
     System.out.println("clock speed: " + ticksPerSecond + " ticks per second");
     logFile.println("clock speed (ticks per second): " + ticksPerSecond);
     logFile.println("");
@@ -112,7 +113,7 @@ public class TwoSocketMachine {
         // else execute a task
         } else {
           // get random int in [1, 10]
-          int rand = ThreadLocalRandom.current().nextInt(1, 10 + 1);
+          int rand = ThreadLocalRandom.current().nextInt(1, 1000 + 1);
 
           // message send for 1-3
           if (rand == 1) {
