@@ -1,10 +1,12 @@
 import java.io.*;
+import java.util.concurrent.*;
 
 public class LogicalClocksSimulator {
   public static void main(String[] args) throws IOException {
 
-    if (args.length != 3) {
-      System.err.println("Usage: java Parent <port0> <port1> <port2>");
+    if (args.length != 4) {
+      System.err.println(
+          "Usage: java Parent <port0> <port1> <port2> <logFileNameBase>");
       System.exit(1);
     }
 
@@ -13,11 +15,15 @@ public class LogicalClocksSimulator {
     String port1 = args[1];
     String port2 = args[2];
 
+    String logFileName0 = "log/" + args[3] + "0.txt";
+    String logFileName1 = "log/" + args[3] + "1.txt";
+    String logFileName2 = "log/" + args[3] + "2.txt";
+
     // commands for creating machine processes
     String[] cmds = {
-      "java TwoSocketMachine 0 1 " + port0 + " 2 " + port1,
-      "java TwoSocketMachine 1 0 " + port0 + " 2 " + port2,
-      "java TwoSocketMachine 2 0 " + port1 + " 1 " + port2
+      "java TwoSocketMachine 0 1 " + port0 + " 2 " + port1 + " " + logFileName0,
+      "java TwoSocketMachine 1 0 " + port0 + " 2 " + port2 + " " + logFileName1,
+      "java TwoSocketMachine 2 0 " + port1 + " 1 " + port2 + " " + logFileName2
     };
 
     try {
