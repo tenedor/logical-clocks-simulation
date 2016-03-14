@@ -1,0 +1,10 @@
+Log File Naming Key
+
+A typical file name is "06.cv1.1-e1000-m0.txt". This encodes four numbers:
+
+[runID].cv[clockVariance]-e[eventTypes]-m[machineID].txt
+
+* runID: The unique id of one simulation. For each runID there will be three files, one for each machine.
+* clockVariance: The multiplicative factor separating the fastest and slowest possible clocks. For any given variance there are six possible clock speeds.
+* eventTypes: The number of different events that may occur. Three events are message sends, the rest are internal; every event is equally likely.
+* machineID: The id of the machine that produced this log.
