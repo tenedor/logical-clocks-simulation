@@ -22,9 +22,20 @@ public class TwoSocketMachine {
     int id1 = Integer.parseInt(args[3]);
     int port1 = Integer.parseInt(args[4]);
 
+    // objects that should be closed on shutdown
+    //
+    // Note: this is a hacky way to make references to not-yet-existing objects.
+    //   I assume java offers some better way to do this but I don't know it.
+    Thread[] socketThreadsContainer = {null, null};
+
+    // add shutdown hook
+    Thread shutdownThread = new Thread(new MachineShutdownThread(
+        socketThreadsContainer));
+    Runtime.getRuntime().addShutdownHook(shutdownThread);
+
     // output writers to the other machines
     //
-    // Note: this is a hacky way to let the subthreads construct the writers.
+    // Note: this is a hacky way to make references to not-yet-existing objects.
     //   I assume java offers some better way to do this but I don't know it.
     PrintWriter[] outContainer0 = {null};
     PrintWriter[] outContainer1 = {null};
@@ -41,9 +52,11 @@ public class TwoSocketMachine {
     // create sockets
     Thread socketThread0 = new Thread(new SocketThread(id, id0, port0,
           outContainer0, messages));
+    socketThreadsContainer[0] = socketThread0;
     socketThread0.start();
     Thread socketThread1 = new Thread(new SocketThread(id, id1, port1,
           outContainer1, messages));
+    socketThreadsContainer[1] = socketThread1;
     socketThread1.start();
 
     try {
@@ -98,12 +111,6 @@ public class TwoSocketMachine {
       }
 
     } catch (InterruptedException e) {
-      // unsafe shutdown; fix this before using it as production code
-      System.out.println("TwoSocketMachine shutting down.");
-
-      // specifically, `destroy` calls are deprecated
-      socketThread0.destroy();
-      socketThread1.destroy();
     }
   }
 }
