@@ -2,6 +2,27 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
+
+// Socket Thread
+//
+// A thread that opens a socket and adds received messages to a buffer.
+//
+// Parameters:
+//   @int id: the id of this machine
+//   @int otherId: the id of the machine on the other side of the socket
+//   @int port: the socket's port
+//   @PrintWriter[] outContainer: length-1 array for a PrintWriter; used as a
+//       layer of indirection for passing the socket output writer
+//   @BlockingQueue<Integer> messages: the buffer to store messages in
+//
+// This thread constructs a socket to another local machine. It assumes
+// symmetric behavior on the other machine's side. If this machine has the lower
+// id, this thread creates the ServerSocket, otherwise it tries connecting to an
+// existing ServerSocket. It will retry after an interval if it fails. Upon
+// successful connection, this thread creates I/O resources and stores the
+// output writer in the `outContainer` array so the thread's parent may use it.
+// This thread reads the input channel and adds messages to the `messages`
+// buffer.
 public class SocketThread implements Runnable {
   int id, otherId, port;
   PrintWriter[] outContainer;

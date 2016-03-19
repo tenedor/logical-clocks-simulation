@@ -2,6 +2,17 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
 
+
+// Machine Shutdown Thread
+//
+// A thread that cleans up TwoSocketMachine resources upon shutdown.
+//
+// Parameters:
+//   @PrintWriter[] logFileContainer: array that holds one print writer
+//   @Thread[] socketThreadsContainer: array that holds two threads
+//
+// This thread shuts down the resources it has been given if those resources
+// have been constructed.
 public class MachineShutdownThread implements Runnable {
   PrintWriter[] logFileContainer;
   Thread[] socketThreadsContainer;

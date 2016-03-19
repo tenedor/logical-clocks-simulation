@@ -6,9 +6,33 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 
+// Two Socket Machine
+//
+// A process that simulates a machine and opens sockets to two other machines.
+//
+// Exec:
+// java TwoSocketMachine <id> <other id 0> <port 0> <other id 1> <port 1>
+//     <log file name>
+//
+// <id>: the unique id of this machine
+// <other id N>: the id of the Nth other machine that this machine will talk to
+// <port N>: the port to use for talking to the Nth other machine
+// <log file name>: the name of the log file to use
+//
+// This process opens sockets to two other machines. For each socket,
+// construction and subsequent message receiving is handled by forking off a
+// SocketThread. Each SocketThread adds received messages to the shared
+// `messages` buffer. Meanwhile, this parent thread simulates a clocked machine:
+// on each tick, if a message is available it is consumed; else by random choice
+// the machine either sends a message to one or both other machines or it
+// registers an internal event. A logical clock is updated with each event. On
+// every clock tick, the event is written to a log file. The machine's clock
+// speed is selected at random on initialization. Safe resource cleanup is
+// handled by a MachineShutdownThread registered as a shutdown hook.
 public class TwoSocketMachine {
   static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
+  // main
   public static void main(String[] args) {
     if (args.length != 6) {
       System.err.println("Usage: java TwoSocketMachine <id> <other id 0> <port 0> <other id 1> <port 1> <log file name>");
@@ -34,7 +58,7 @@ public class TwoSocketMachine {
     PrintWriter[] logFileContainer = {null};
     Thread[] socketThreadsContainer = {null, null};
 
-    // add shutdown hook
+    // add shutdown hook for safe cleanup when process is killed
     Thread shutdownThread = new Thread(new MachineShutdownThread(
         logFileContainer, socketThreadsContainer));
     Runtime.getRuntime().addShutdownHook(shutdownThread);
@@ -140,6 +164,7 @@ public class TwoSocketMachine {
     }
   }
 
+  // produce a log message in a consistently-formatted way
   private static String messageLog(int logicalTime, String message) {
     String systemTime = LocalTime.now().format(timeFormat);
     return systemTime + " " + logicalTime + " " + message;
